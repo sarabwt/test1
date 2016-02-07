@@ -1,1 +1,3 @@
 # test1
+
+NIMAM POJMA KEJ DELAM!!!
