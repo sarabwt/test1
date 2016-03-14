@@ -2,26 +2,32 @@ PImage player;
 Player myPlayer1;
 boolean mouseButtonRight, mouseButtonLeft = false;
 
+PImage bmw;
 
-void settings() {
-}
+
 
 void setup() {
-  background(255);
-  myPlayer1 (
+  size(800,800);
+ 
+  
+  myPlayer1 =new Player(bmw,100,100,3);
 }
 
 void draw() {
+   background(255);
   myPlayer1.move();
   myPlayer1.display();
+  myPlayer1.mouseMove();
 }
 
 void playerImage() {
+  bmw=loadImage("data/z4gt3");
 }
 
 void mousePressed() {
   if (mouseButton==RIGHT) {
     mouseButtonRight=true;
+    
   }
   if (mouseButton==LEFT) {
     mouseButtonLeft=true;
@@ -34,8 +40,8 @@ class Player {
   PImage player;
 
   float n;
-  float mousePX=0;
-  float mousePY=0;
+  float mousePX=xpos;
+  float mousePY=ypos;
   float moveSpeed;
 
 
@@ -49,7 +55,7 @@ class Player {
   void mouseMove() {
     if (mouseButtonRight==true) {
       mousePX=mouseX;
-      mousePY=mouseY;
+      mousePY=mouseY;     
       mouseButtonRight=false;
     }
   }
@@ -59,18 +65,20 @@ class Player {
     float k2=mousePY-ypos;
     float h=(float) (Math.sqrt(k1*k1+k2*k2));
     if (xpos!=mousePX && ypos != mousePY) {
-      n=asin((mousePY-ypos)/h);
-      xpos=cos(n)*moveSpeed;
-      ypos=sin(n)*moveSpeed;
+      n=asin((k2)/h);
+      //xpos+=cos(n)*1;
+       println(k1+" "+k2+" "+xpos+" "+ypos+" "+mousePX+" "+mousePY+" "+mouseX+" "+mouseY+" "+n);
+      //ypos+=sin(n)*1;
     }
   }
 
   void display() {   
     pushMatrix();
-    translate(width/2, height/2);
-    rotate(radians(n));
+    translate(xpos, ypos);
+    rectMode(CENTER);
+    rotate(degrees(n));
     fill(0);
-    rect(xpos,ypos,10,10);   
+    rect(xpos,ypos,10,30);   
     popMatrix();
   }
 }
