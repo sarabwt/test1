@@ -1,26 +1,54 @@
-PImage img;
+PImage img, bg;
 
 boolean keys[] = new boolean [7];
 Player myPlayer1;
 
-  boolean mouseButtonRight, mouseButtonLeft = false;
+boolean mouseButtonRight, mouseButtonLeft = false;
+boolean ability1, ability2, ability3 =false;
 
 void setup() {
   size(700, 700);
   img = loadImage("data/z4gt3.png");
-  myPlayer1 = new Player (img,200,200,3);
+  bg= loadImage("data/proga2.png");
+  myPlayer1 = new Player (img, 200, 200, 3);
   smooth(2);
   frameRate(60);
-  background(0);
+
 }
 
 void draw() {  
   clear();  
-  myPlayer1.mouse();
-  myPlayer1.keyCheck();
-  myPlayer1.rotatePlayer();
+  background(bg.get(myPlayer1.getXpos()-width/2, myPlayer1.getYpos()-width/2, width, height));
   myPlayer1.move();
 } 
+
+void keyPressed() {
+  switch(key) {
+  case 'q':
+    ability1=true;
+    break;
+  case 'w':
+    ability2=true;
+    break;
+  case 'e':
+    ability1=true;
+    break;
+  }
+}
+
+void keyReleased() {
+  switch(key) {
+  case 'q':
+    ability1=false;
+    break;
+  case 'w':
+    ability2=false;
+    break;
+  case 'e':
+    ability1=false;
+    break;
+  }
+}
 
 void mousePressed() {
   if (mouseButton==RIGHT) {
@@ -50,8 +78,8 @@ class Player {
   float angle=0;
   float rad= 0.0174532925;
 
-  float getMousex=playerx;
-  float getMousey=playery;
+  float getMousex=300;
+  float getMousey=300;
 
   float xcount;
   float ycount;
@@ -69,6 +97,7 @@ class Player {
 
 
   void keyCheck() {
+    mouse();
     xcount=playerx-getMousex;
     ycount=playery-getMousey;
 
@@ -86,18 +115,28 @@ class Player {
     }
   }
 
-  void move(){
-  playerx = playerx + cos(angle)*moveSpeed;
-  playery = playery + sin(angle)*moveSpeed;
-}
+  void move() {
+    rotatePlayer();
+    playerx = playerx + cos(angle)*moveSpeed;
+    playery = playery + sin(angle)*moveSpeed;
+  }
 
 
   void rotatePlayer() {
+    keyCheck();
     imageMode(CENTER);
     translate(playerx, playery);
     rotate(angle);
     translate(-playerx, -playery); 
     image(img, playerx, playery);
     resetMatrix();
+  }
+  
+  int getXpos(){
+  return (int)playerx;
+  }
+  
+  int getYpos(){
+  return (int)playery;
   }
 }
