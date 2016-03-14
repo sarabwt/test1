@@ -8,7 +8,7 @@ Player myPlayer1;
 void setup() {
   size(700, 700);
   img = loadImage("data/z4gt3.png");
-  myPlayer1 = new Player (img,200,200,1);
+  myPlayer1 = new Player (img,200,200,3);
   smooth(2);
   frameRate(60);
   background(0);
@@ -19,6 +19,7 @@ void draw() {
   myPlayer1.mouse();
   myPlayer1.keyCheck();
   myPlayer1.rotatePlayer();
+  myPlayer1.move();
 } 
 
 void mousePressed() {
@@ -30,18 +31,27 @@ void mousePressed() {
   }
 }
 
+void mouseReleased() {
+  if (mouseButton==RIGHT) {
+    mouseButtonRight=false;
+  }
+  if (mouseButton==LEFT) {
+    mouseButtonLeft=false;
+  }
+}
+
 class Player {
   PImage player;
   float playerx;
   float playery;
-  float moveSpeed=2;
+  float moveSpeed;
 
   int rotateSpeed=3;
   float angle=0;
   float rad= 0.0174532925;
 
-  float getMousex;
-  float getMousey;
+  float getMousex=playerx;
+  float getMousey=playery;
 
   float xcount;
   float ycount;
@@ -67,15 +77,12 @@ class Player {
     if (getMousex<=playerx) {
       angle=(90*rad+angle)+90*rad;
     }
-
-    println(angle/rad);
   }
 
   void mouse() {
     if (mouseButtonRight==true) {
       getMousex=mouseX;
       getMousey=mouseY;
-      mouseButtonRight=false;
     }
   }
 
