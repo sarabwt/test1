@@ -1,86 +1,84 @@
- var 
-        gameport        = process.env.PORT || 4004,
-		
-        io              = require('socket.io'),
-        express         = require('express'),
-        UUID            = require('node-uuid'),
-		http			= require('http'),
-        verbose         = false,
-        app             = express(),
-		server			= http.createServer(app);
-		
+PImage player;
+Player myPlayer1;
+boolean mouseButtonRight, mouseButtonLeft = false;
 
-/* Express server set up. */
-
-//The express server handles passing our content to the browser,
-//As well as routing users where they need to go. This example is bare bones
-//and will serve any file the user requests from the root of your web server (where you launch the script from)
-//so keep this in mind - this is not a production script but a development teaching tool.
-
-        //Tell the server to listen for incoming connections
-    server.listen( gameport );
-
-        //Log something so we know that it succeeded.
-    console.log('\t :: Express :: Listening on port ' + gameport );
-
-        //By default, we forward the / path to index.html automatically.
-    app.get( '/', function( req, res ){ 
-        res.sendfile( __dirname + '/simplest.html' );
-    });
+PImage bmw;
 
 
-        //This handler will listen for requests on /*, any file from the root of our server.
-        //See expressjs documentation for more info on routing.
 
-    app.get( '/*' , function( req, res, next ) {
+void setup() {
+  size(800,800);
+ 
+  
+  myPlayer1 =new Player(bmw,100,100,3);
+}
 
-            //This is the current file they have requested
-        var file = req.params[0]; 
+void draw() {
+   background(255);
+  myPlayer1.move();
+  myPlayer1.display();
+  myPlayer1.mouseMove();
+}
 
-            //For debugging, we can track what files are requested.
-        if(verbose) console.log('\t :: Express :: file requested : ' + file);
+void playerImage() {
+  bmw=loadImage("data/z4gt3");
+}
 
-            //Send the requesting client the file.
-        res.sendfile( __dirname + '/' + file );
+void mousePressed() {
+  if (mouseButton==RIGHT) {
+    mouseButtonRight=true;
+    
+  }
+  if (mouseButton==LEFT) {
+    mouseButtonLeft=true;
+  }
+}
 
-    }); //app.get *
-	
-	 var sio = io.listen(server);
+class Player {
+  float xpos;
+  float ypos;
+  PImage player;
 
-        //Configure the socket.io connection settings. 
-        //See http://socket.io/
-    sio.configure(function (){
+  float n;
+  float mousePX=xpos;
+  float mousePY=ypos;
+  float moveSpeed;
 
-        sio.set('log level', 0);
 
-        sio.set('authorization', function (handshakeData, callback) {
-          callback(null, true); // error first callback style 
-        });
+  Player(PImage skin, float x, float y, float move) {
+    xpos=x;
+    ypos=y;
+    player=skin;
+    moveSpeed=move;
+  }
 
-    });
+  void mouseMove() {
+    if (mouseButtonRight==true) {
+      mousePX=mouseX;
+      mousePY=mouseY;     
+      mouseButtonRight=false;
+    }
+  }
 
-        //Socket.io will call this function when a client connects, 
-        //So we can send that client a unique ID we use so we can 
-        //maintain the list of players.
-    sio.sockets.on('connection', function (client) {
-        
-            //Generate a new UUID, looks something like 
-            //5b2ca132-64bd-4513-99da-90e838ca47d1
-            //and store this on their socket/connection
-        client.userid = UUID();
+  void move() {
+    float k1=mousePX-xpos;
+    float k2=mousePY-ypos;
+    float h=(float) (Math.sqrt(k1*k1+k2*k2));
+    if (xpos!=mousePX && ypos != mousePY) {
+      n=asin((k2)/h);
+      //xpos+=cos(n)*1;
+       println(k1+" "+k2+" "+xpos+" "+ypos+" "+mousePX+" "+mousePY+" "+mouseX+" "+mouseY+" "+n);
+      //ypos+=sin(n)*1;
+    }
+  }
 
-            //tell the player they connected, giving them their id
-        client.emit('onconnected', { id: client.userid } );
-
-            //Useful to know when someone connects
-        console.log('\t socket.io:: player ' + client.userid + ' connected');
-        
-            //When this client disconnects
-        client.on('disconnect', function () {
-
-                //Useful to know when someone disconnects
-            console.log('\t socket.io:: client disconnected ' + client.userid );
-
-        }); //client.on disconnect
-     
-    }); //sio.sockets.on connection
+  void display() {   
+    pushMatrix();
+    translate(xpos, ypos);
+    rectMode(CENTER);
+    rotate(degrees(n));
+    fill(0);
+    rect(xpos,ypos,10,30);   
+    popMatrix();
+  }
+}
