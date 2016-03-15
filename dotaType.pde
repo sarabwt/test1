@@ -1,26 +1,38 @@
-PImage img;
+PImage imgPlayer, imgBackground;
 
-boolean keys[] = new boolean [7];
-Player myPlayer1;
+Player Player;
 
-  boolean mouseButtonRight, mouseButtonLeft = false;
+boolean mouseButtonRight, mouseButtonLeft = false;
+boolean ability1, ability2, ability3 =false;
 
 void setup() {
   size(700, 700);
-  img = loadImage("data/z4gt3.png");
-  myPlayer1 = new Player (img,200,200,3);
+  imgPlayer = loadImage("player.png");
+  imgBackground = loadImage("map.png");
+  Player = new Player (200, 200, 2);
   smooth(2);
   frameRate(60);
-  background(0);
 }
 
 void draw() {  
   clear();  
-  myPlayer1.mouse();
-  myPlayer1.keyCheck();
-  myPlayer1.rotatePlayer();
-  myPlayer1.move();
+  background(imgBackground.get(Player.getXpos()-width/2, Player.getYpos()-width/2, width, height));
+  Player.move();
 } 
+
+void keyPressed() {
+  switch(key) {
+  case 'q':
+    ability1=!ability1;
+    break;
+  case 'w':
+    ability2=!ability2;
+    break;
+  case 'e':
+    ability3=!ability3;
+    break;
+  }
+}
 
 void mousePressed() {
   if (mouseButton==RIGHT) {
@@ -42,39 +54,34 @@ void mouseReleased() {
 
 class Player {
   PImage player;
-  float playerx;
-  float playery;
+  float playerx=200;
+  float playery=200;
   float moveSpeed;
 
-  int rotateSpeed=3;
   float angle=0;
   float rad= 0.0174532925;
 
-  float getMousex=playerx;
-  float getMousey=playery;
+  float getMousex=300;
+  float getMousey=300;
 
   float xcount;
   float ycount;
-  float correct;
 
-
-
-
-  Player(PImage skin, float x, float y, float move) {
+  Player(float x, float y, float move) {
     playerx=x;
     playery=y;
-    player=skin;
     moveSpeed=move;
   }
 
 
   void keyCheck() {
-    xcount=playerx-getMousex;
-    ycount=playery-getMousey;
+    mouse();
+    xcount=width/2-getMousex;
+    ycount=height/2-getMousey;
 
     angle=atan(ycount/xcount);
 
-    if (getMousex<=playerx) {
+    if (getMousex<=width/2) {
       angle=(90*rad+angle)+90*rad;
     }
   }
@@ -86,18 +93,34 @@ class Player {
     }
   }
 
-  void move(){
-  playerx = playerx + cos(angle)*moveSpeed;
-  playery = playery + sin(angle)*moveSpeed;
-}
+  void move() {
+    moveSpeed=2;
+    rotatePlayer();
 
+    if (abs(playerx-getMousex)<moveSpeed+0.1 && abs(playery-getMousey)<moveSpeed+0.1) {
+      moveSpeed=0;
+    }
+    playerx = playerx + cos(angle)*moveSpeed;
+    playery = playery + sin(angle)*moveSpeed;
+  }
 
   void rotatePlayer() {
+     pushMatrix();
+    keyCheck();
     imageMode(CENTER);
-    translate(playerx, playery);
+    translate(width/2, height/2);
     rotate(angle);
-    translate(-playerx, -playery); 
-    image(img, playerx, playery);
-    resetMatrix();
+    println(angle/rad);
+    image(imgPlayer, 0, 0);
+    translate(-width/2, height/2);  
+    popMatrix();
+  }
+
+  int getXpos() {
+    return (int)playerx;
+  }
+
+  int getYpos() {
+    return (int)playery;
   }
 }
