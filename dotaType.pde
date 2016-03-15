@@ -1,6 +1,4 @@
-PImage img, bg;
-
-boolean keys[] = new boolean [7];
+PImage img, bg, ab;
 Player myPlayer1;
 
 boolean mouseButtonRight, mouseButtonLeft = false;
@@ -8,34 +6,34 @@ boolean ability1, ability2, ability3 =false;
 
 void setup() {
   size(700, 700);
-  img = loadImage("data/z4gt3.png");
-  bg= loadImage("data/proga2.png");
-  myPlayer1 = new Player (img, 200, 200, 3);
-  smooth(2);
+  img = loadImage("player.png");
+  ab = loadImage("ab.png");
+  //bg= loadImage("map.png");
+  myPlayer1 = new Player (200, 200, 2, 1);
   frameRate(60);
-
 }
 
 void draw() {  
   clear();  
-  background(bg.get(myPlayer1.getXpos()-width/2, myPlayer1.getYpos()-width/2, width, height));
-  myPlayer1.move();
+  // background(bg.get(myPlayer1.getXpos()-width/2, myPlayer1.getYpos()-width/2, width, height));
+  myPlayer1.trigger();
 } 
 
 void keyPressed() {
   switch(key) {
   case 'q':
-    ability1=true;
+    ability1=!ability1;
     break;
   case 'w':
-    ability2=true;
+    ability2=!ability2;
     break;
   case 'e':
-    ability1=true;
+    ability3=!ability3;
     break;
   }
 }
 
+/*
 void keyReleased() {
   switch(key) {
   case 'q':
@@ -45,10 +43,11 @@ void keyReleased() {
     ability2=false;
     break;
   case 'e':
-    ability1=false;
+    ability3=false;
     break;
   }
 }
+*/
 
 void mousePressed() {
   if (mouseButton==RIGHT) {
@@ -69,30 +68,41 @@ void mouseReleased() {
 }
 
 class Player {
-  PImage player;
   float playerx;
   float playery;
   float moveSpeed;
 
-  int rotateSpeed=3;
   float angle=0;
   float rad= 0.0174532925;
 
-  float getMousex=300;
-  float getMousey=300;
+  float getMousex;
+  float getMousey;
+  
+  float getPressx;
+  float getPressy;
 
   float xcount;
   float ycount;
-  float correct;
 
+  int range=300;
+  int playerAbility;
 
-
-
-  Player(PImage skin, float x, float y, float move) {
+  Player(float x, float y, float move, int ability) {
     playerx=x;
     playery=y;
-    player=skin;
     moveSpeed=move;
+    playerAbility=ability;
+  }
+
+  void trigger() {
+    chooseAbility();
+    move();
+  }
+
+  void chooseAbility(){
+    if(playerAbility==1){
+      ability();
+    }
   }
 
 
@@ -112,10 +122,19 @@ class Player {
     if (mouseButtonRight==true) {
       getMousex=mouseX;
       getMousey=mouseY;
+      moveSpeed=2;
+    }
+    if (mouseButtonLeft==true) {
+      getPressx=mouseX;
+      getPressy=mouseY;
     }
   }
 
   void move() {
+    if (abs(playerx-getMousex)<moveSpeed+0.1 && abs(playery-getMousey)<moveSpeed+0.1) {
+      moveSpeed=0;
+    }
+
     rotatePlayer();
     playerx = playerx + cos(angle)*moveSpeed;
     playery = playery + sin(angle)*moveSpeed;
@@ -131,12 +150,31 @@ class Player {
     image(img, playerx, playery);
     resetMatrix();
   }
-  
-  int getXpos(){
-  return (int)playerx;
+
+  int getXpos() {
+    return (int)playerx;
   }
-  
-  int getYpos(){
-  return (int)playery;
+
+  int getYpos() {
+    return (int)playery;
   }
+
+
+
+    void ability() {
+    if (ability1==true) {
+      ellipseMode(CENTER);
+      fill(0);
+      stroke(255);
+      ellipse(playerx, playery, range, range);
+    }
+    if( ability1==true){
+      if(  (abs(playery-getPressy))*(abs(playerx-getPressx))*(abs(playery-getPressy))*(abs(playerx-getPressx))<range)
+      println(getPressx+"    "+getPressy);
+      ellipse(getPressx, getPressy, 20, 20);
+    }
+    
+  }
+
 }
+  
