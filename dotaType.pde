@@ -54,15 +54,21 @@ void mouseReleased() {
 
 class Player {
   PImage player;
-  float playerx=200;
-  float playery=200;
+  float playerx;
+  float playery;
   float moveSpeed;
 
   float angle=0;
   float rad= 0.0174532925;
 
-  float getMousex=300;
-  float getMousey=300;
+  float remplayerx;
+  float remplayery;
+
+  float getMousex;
+  float getMousey;
+  
+  float setMousex;
+  float setMousey;
 
   float xcount;
   float ycount;
@@ -88,6 +94,11 @@ class Player {
 
   void mouse() {
     if (mouseButtonRight==true) {
+      setMousex=-(width/2-mouseX);
+      setMousey=-(height/2-mouseY);
+      
+      remplayerx=playerx;
+      remplayery=playery;
       getMousex=mouseX;
       getMousey=mouseY;
     }
@@ -97,11 +108,13 @@ class Player {
     moveSpeed=2;
     rotatePlayer();
 
-    if (abs(playerx-getMousex)<moveSpeed+0.1 && abs(playery-getMousey)<moveSpeed+0.1) {
+    if (int(remplayerx+setMousex)>int(playerx)-moveSpeed && int(remplayerx+setMousex)<int(playerx)+moveSpeed && int(remplayery+setMousey)<int(playery)+moveSpeed && int(remplayery+setMousey)>int(playery)-moveSpeed) {
       moveSpeed=0;
     }
-    playerx = playerx + cos(angle)*moveSpeed;
-    playery = playery + sin(angle)*moveSpeed;
+   playerx = playerx + cos(angle)*moveSpeed;
+   playery = playery + sin(angle)*moveSpeed;
+    
+    println(playerx+"   "+remplayerx+"   "+setMousex);
   }
 
   void rotatePlayer() {
@@ -110,7 +123,6 @@ class Player {
     imageMode(CENTER);
     translate(width/2, height/2);
     rotate(angle);
-    println(angle/rad);
     image(imgPlayer, 0, 0);
     translate(-width/2, height/2);  
     popMatrix();
