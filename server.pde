@@ -16,6 +16,6 @@ void draw() {
     input = c.readString(); 
     input = input.substring(0, input.indexOf("\n"));  // Only up to the newline
     data = int(split(input, ' '));  // Split values into an array
-    s.write(data[0] + " " + data[1] + " " + data[2] + " " + data[3] + "\n");
+    s.write(data[0] + " " + data[1] + " " + data[2] + "\n");
   }
 }
